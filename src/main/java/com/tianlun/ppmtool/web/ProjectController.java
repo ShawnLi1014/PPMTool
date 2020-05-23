@@ -1,6 +1,7 @@
 package com.tianlun.ppmtool.web;
 
 import com.tianlun.ppmtool.domain.Project;
+import com.tianlun.ppmtool.domain.ProjectTask;
 import com.tianlun.ppmtool.services.MapValidationErrorService;
 import com.tianlun.ppmtool.services.ProjectService;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.xml.ws.Response;
 
 @RestController
 @RequestMapping("/api/project")
@@ -17,7 +19,6 @@ public class ProjectController {
 
     private final ProjectService projectService;
     private final MapValidationErrorService mapValidationErrorService;
-
 
     public ProjectController(ProjectService projectService, MapValidationErrorService mapValidationErrorService) {
         this.projectService = projectService;
@@ -34,7 +35,7 @@ public class ProjectController {
         }
 
         Project project1 = projectService.saveOrUpdateProject(project);
-        return new ResponseEntity<>(project, HttpStatus.CREATED);
+        return new ResponseEntity<>(project1, HttpStatus.CREATED);
     }
 
     @GetMapping("/{projectId}")

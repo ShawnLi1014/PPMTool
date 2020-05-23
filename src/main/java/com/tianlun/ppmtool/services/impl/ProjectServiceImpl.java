@@ -1,7 +1,9 @@
 package com.tianlun.ppmtool.services.impl;
 
+import com.tianlun.ppmtool.domain.Backlog;
 import com.tianlun.ppmtool.domain.Project;
 import com.tianlun.ppmtool.exceptions.ProjectIdException;
+import com.tianlun.ppmtool.repositories.BacklogRepository;
 import com.tianlun.ppmtool.repositories.ProjectRepository;
 import com.tianlun.ppmtool.services.ProjectService;
 import org.springframework.stereotype.Service;
@@ -10,16 +12,30 @@ import org.springframework.stereotype.Service;
 public class ProjectServiceImpl implements ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final BacklogRepository backlogRepository;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, BacklogRepository backlogRepository) {
         this.projectRepository = projectRepository;
+        this.backlogRepository = backlogRepository;
     }
 
     @Override
     public Project saveOrUpdateProject(Project project) {
 
         try {
-            project.setProjectIdentifier(project.getProjectIdentifier().toUpperCase());
+            String projectIdentifier = project.getProjectIdentifier().toUpperCase();
+            project.setProjectIdentifier(projectIdentifier);
+            if (project.getId() == null) {
+                Backlog backlog = new Backlog();
+                project.setBacklog(backlog);
+                backlog.setProject(project);
+                backlog.setProjectIdentifier(projectIdentifier);
+            }
+
+            if (project.getId() != null) {
+                project.setBacklog(backlogRepository.findByProjectIdentifier(projectIdentifier));
+            }
+
             return projectRepository.save(project);
 
         } catch (Exception e) {
